@@ -1,7 +1,8 @@
 /**
  * AESTHETIC COLLAGE STUDIO - APPLICATION CONTROLLER
- * Zero Artificial Intelligence. 100% Deterministic Client-side JavaScript.
- * Real-time responsive live preview, 1 to 20 photo limit, 100 aesthetic style library.
+ * Zero AI • 100% Deterministic Client-side JavaScript.
+ * Supports up to 20 photos, custom aspect ratios, 100 distinct aesthetic styles,
+ * touch-enabled mobile navigation, and Ultra-HD 4K export.
  */
 
 import { AESTHETIC_STYLES, AESTHETIC_CATEGORIES } from './research/aesthetic-catalog.js';
@@ -10,7 +11,6 @@ import { CanvasRenderer } from './engine/canvas-renderer.js';
 
 const MAX_PHOTOS = 20;
 
-// Curated Aspect Ratio Dimensions (in preview space, exported dynamically at 1x, 2x, 4x)
 const ASPECT_RATIO_PRESETS = {
   '1:1': { w: 1200, h: 1200, label: '1:1 Square (Instagram / Album)' },
   '4:5': { w: 1200, h: 1500, label: '4:5 Portrait (Instagram Feed)' },
@@ -27,6 +27,7 @@ const ASPECT_RATIO_PRESETS = {
 class CollageStudioApp {
   constructor() {
     this.canvas = document.getElementById('collageCanvas');
+    this.canvasWrapper = document.getElementById('canvasWrapper');
     this.renderer = new CanvasRenderer(this.canvas);
 
     // Initial state
@@ -39,6 +40,9 @@ class CollageStudioApp {
     this.draggedPhotoIndex = null;
     this.hoverCellIndex = null;
 
+    // Viewport Zoom
+    this.viewportZoom = 1;
+
     // Interaction flags for canvas direct pan/drag
     this.isMouseDown = false;
     this.isPanning = false;
@@ -50,11 +54,14 @@ class CollageStudioApp {
 
   async init() {
     this.bindDOM();
+    this.bindTabs();
+    this.bindCanvasInteractions();
+    this.bindTouchInteractions();
     this.renderAestheticCatalogModal();
     this.renderCategoryPills();
     this.updateCanvasDimensions();
-    
-    // Automatically load 5 high-aesthetic sample images so the user gets an instant WOW factor!
+
+    // Automatically load 5 high-aesthetic sample photos on startup
     await this.loadSamplePhotos();
   }
 
@@ -93,20 +100,20 @@ class CollageStudioApp {
     this.updatePhotoStripUI();
   }
 
-  // --- Photo Management (1 to 20) ---
+  // --- Photo Management (1 to 20 limit) ---
 
   async addPhotos(files) {
     if (!files || files.length === 0) return;
 
     const remainingSlots = MAX_PHOTOS - this.photos.length;
     if (remainingSlots <= 0) {
-      this.showToast(`ছবি নির্বাচন করার সর্বোচ্চ সীমা ২০টি পূর্ণ হয়েছে! (Maximum 20 photos reached)`, 'warning');
+      this.showToast('Maximum photo limit (20) reached.', 'warning');
       return;
     }
 
     const filesToLoad = Array.from(files).slice(0, remainingSlots);
     if (files.length > remainingSlots) {
-      this.showToast(`লিমিট ২০টি: কেবল প্রথম ${remainingSlots}টি ছবি নেওয়া হলো।`, 'info');
+      this.showToast(`Limit reached: added only first ${remainingSlots} photos.`, 'info');
     }
 
     for (const file of filesToLoad) {
@@ -130,7 +137,7 @@ class CollageStudioApp {
     }
 
     this.recomputeAndRender();
-    this.showToast(`${this.photos.length} / 20 ছবি যুক্ত রয়েছে`, 'success');
+    this.showToast(`${this.photos.length} / ${MAX_PHOTOS} photos loaded`, 'success');
   }
 
   loadImage(src) {
@@ -155,28 +162,18 @@ class CollageStudioApp {
         this.selectedPhotoIndex--;
       }
       this.recomputeAndRender();
-      this.showToast(`ছবি অপসারিত হলো (${this.photos.length}/20)`, 'info');
+      this.showToast(`Photo removed (${this.photos.length}/${MAX_PHOTOS})`, 'info');
     }
   }
 
-  swapPhotos(indexA, indexB) {
-    if (indexA < 0 || indexA >= this.photos.length || indexB < 0 || indexB >= this.photos.length) return;
-    const temp = this.photos[indexA];
-    this.photos[indexA] = this.photos[indexB];
-    this.photos[indexB] = temp;
-    this.selectedPhotoIndex = indexB;
-    this.recomputeAndRender();
-  }
-
-  // Sample Photos Generator (using fast procedural artistic SVG canvas generators)
+  // Sample Photos Generator (Procedural High-Aesthetic Scenes)
   async loadSamplePhotos() {
     const samplePalettes = [
       { bg: '#E07A5F', fg: '#F4F1DE', title: 'Golden Hour' },
       { bg: '#3D405B', fg: '#F2CC8F', title: 'Midnight Studio' },
       { bg: '#81B29A', fg: '#3D405B', title: 'Botanical Flora' },
       { bg: '#F2CC8F', fg: '#E07A5F', title: 'Vintage Sunset' },
-      { bg: '#4A5568', fg: '#CBD5E1', title: 'Archival Monochrome' },
-      { bg: '#9F7AEA', fg: '#FAF5FF', title: 'Pastel Dreamscape' }
+      { bg: '#4A5568', fg: '#CBD5E1', title: 'Archival Monochrome' }
     ];
 
     const sampleImages = [];
@@ -187,14 +184,12 @@ class CollageStudioApp {
       c.height = 1000;
       const ctx = c.getContext('2d');
 
-      // Gradient background
       const grad = ctx.createLinearGradient(0, 0, 800, 1000);
       grad.addColorStop(0, p.bg);
       grad.addColorStop(1, '#1A202C');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 800, 1000);
 
-      // Aesthetic geometric shapes & rings
       ctx.fillStyle = p.fg;
       ctx.globalAlpha = 0.25;
       ctx.beginPath();
@@ -206,7 +201,6 @@ class CollageStudioApp {
       ctx.arc(400, 500, 160, 0, Math.PI * 2);
       ctx.fill();
 
-      // Title & number
       ctx.globalAlpha = 1.0;
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'center';
@@ -219,7 +213,7 @@ class CollageStudioApp {
       const img = await this.loadImage(url);
       sampleImages.push({
         id: 'sample-' + i,
-        name: `Aesthetic Sample ${i + 1}`,
+        name: `Sample Photo ${i + 1}`,
         url,
         image: img,
         transform: { zoom: 1, panX: 0, panY: 0, rotation: 0, flipH: false, flipV: false }
@@ -244,7 +238,7 @@ class CollageStudioApp {
     }
     this.syncControlsWithStyle();
     this.recomputeAndRender();
-    this.showToast(`স্টাইল প্রয়োগ করা হয়েছে: "${styleObj.name}"`, 'success');
+    this.showToast(`Applied: "${styleObj.name}"`, 'success');
   }
 
   syncControlsWithStyle() {
@@ -280,10 +274,59 @@ class CollageStudioApp {
     });
   }
 
-  // --- UI Bindings & Event Handlers ---
+  // --- Tab & Mobile Navigation ---
+
+  bindTabs() {
+    const switchTab = (tabId) => {
+      // Sidebar desktop tabs
+      document.querySelectorAll('.sidebar-tab').forEach(btn => {
+        const isActive = btn.dataset.tab === tabId;
+        btn.classList.toggle('border-indigo-500', isActive);
+        btn.classList.toggle('text-indigo-400', isActive);
+        btn.classList.toggle('border-transparent', !isActive);
+        btn.classList.toggle('text-zinc-400', !isActive);
+      });
+
+      // Mobile bottom nav buttons
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        const isActive = btn.dataset.tab === tabId;
+        btn.classList.toggle('text-indigo-400', isActive);
+        btn.classList.toggle('text-zinc-400', !isActive);
+      });
+
+      // Tab panels
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+      const activePanel = document.getElementById(`tab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      // On mobile: show sidebar if clicked from bottom nav
+      const sidebar = document.getElementById('studioSidebar');
+      if (sidebar && window.innerWidth < 768) {
+        sidebar.classList.remove('hidden');
+      }
+    };
+
+    document.querySelectorAll('.sidebar-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    const openCatalogFromTab = document.getElementById('openCatalogFromTabBtn');
+    if (openCatalogFromTab) {
+      openCatalogFromTab.addEventListener('click', () => {
+        const modal = document.getElementById('libraryModal');
+        if (modal) modal.classList.remove('hidden');
+      });
+    }
+  }
+
+  // --- UI Bindings & Event Listeners ---
 
   bindDOM() {
-    // File upload handlers
+    // File upload
     const fileInput = document.getElementById('photoFileInput');
     const uploadDropzone = document.getElementById('uploadDropzone');
 
@@ -298,29 +341,29 @@ class CollageStudioApp {
       uploadDropzone.addEventListener('click', () => fileInput.click());
       uploadDropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        uploadDropzone.classList.add('border-primary');
+        uploadDropzone.classList.add('border-indigo-500');
       });
       uploadDropzone.addEventListener('dragleave', () => {
-        uploadDropzone.classList.remove('border-primary');
+        uploadDropzone.classList.remove('border-indigo-500');
       });
       uploadDropzone.addEventListener('drop', (e) => {
         e.preventDefault();
-        uploadDropzone.classList.remove('border-primary');
+        uploadDropzone.classList.remove('border-indigo-500');
         this.addPhotos(e.dataTransfer.files);
       });
     }
 
-    // Load Demo Photos button
+    // Demo button
     const loadDemoBtn = document.getElementById('loadDemoBtn');
     if (loadDemoBtn) {
       loadDemoBtn.addEventListener('click', () => this.loadSamplePhotos());
     }
 
-    // Clear all photos button
+    // Clear all
     const clearAllBtn = document.getElementById('clearAllBtn');
     if (clearAllBtn) {
       clearAllBtn.addEventListener('click', () => {
-        if (confirm('সব ছবি পরিষ্কার করতে চান? (Clear all photos?)')) {
+        if (confirm('Clear all uploaded photos?')) {
           this.photos = [];
           this.selectedPhotoIndex = null;
           this.recomputeAndRender();
@@ -328,7 +371,7 @@ class CollageStudioApp {
       });
     }
 
-    // Aspect Ratio selector
+    // Ratio selector
     const aspectRatioSelect = document.getElementById('aspectRatioSelect');
     if (aspectRatioSelect) {
       aspectRatioSelect.addEventListener('change', (e) => {
@@ -337,7 +380,7 @@ class CollageStudioApp {
       });
     }
 
-    // Layout Type selector
+    // Layout selector
     const layoutTypeSelect = document.getElementById('layoutTypeSelect');
     if (layoutTypeSelect) {
       layoutTypeSelect.addEventListener('change', (e) => {
@@ -346,7 +389,7 @@ class CollageStudioApp {
       });
     }
 
-    // Frame Style selector
+    // Frame style selector
     const frameStyleSelect = document.getElementById('frameStyleSelect');
     if (frameStyleSelect) {
       frameStyleSelect.addEventListener('change', (e) => {
@@ -355,42 +398,17 @@ class CollageStudioApp {
       });
     }
 
-    // Real-time Sliders
-    const gapSlider = document.getElementById('gapSlider');
-    if (gapSlider) {
-      gapSlider.addEventListener('input', (e) => {
-        this.currentStyle.gap = parseInt(e.target.value, 10);
-        this.updateSliderValueLabels();
-        this.recomputeAndRender();
-      });
-    }
-
-    const radiusSlider = document.getElementById('radiusSlider');
-    if (radiusSlider) {
-      radiusSlider.addEventListener('input', (e) => {
-        this.currentStyle.radius = parseInt(e.target.value, 10);
-        this.updateSliderValueLabels();
-        this.recomputeAndRender();
-      });
-    }
-
-    const paddingSlider = document.getElementById('paddingSlider');
-    if (paddingSlider) {
-      paddingSlider.addEventListener('input', (e) => {
-        this.currentStyle.padding = parseInt(e.target.value, 10);
-        this.updateSliderValueLabels();
-        this.recomputeAndRender();
-      });
-    }
-
-    const grainSlider = document.getElementById('grainSlider');
-    if (grainSlider) {
-      grainSlider.addEventListener('input', (e) => {
-        this.currentStyle.grain = parseInt(e.target.value, 10);
-        this.updateSliderValueLabels();
-        this.recomputeAndRender();
-      });
-    }
+    // Sliders
+    ['gap', 'radius', 'padding', 'grain'].forEach(key => {
+      const slider = document.getElementById(`${key}Slider`);
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          this.currentStyle[key] = parseInt(e.target.value, 10);
+          this.updateSliderValueLabels();
+          this.recomputeAndRender();
+        });
+      }
+    });
 
     // Background color
     const bgColorInput = document.getElementById('bgColorInput');
@@ -401,9 +419,9 @@ class CollageStudioApp {
       });
     }
 
-    // Background Palette Swatches
+    // Swatches
     document.querySelectorAll('.palette-swatch').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const color = btn.dataset.color;
         if (color) {
           this.currentStyle.background = color;
@@ -413,7 +431,7 @@ class CollageStudioApp {
       });
     });
 
-    // Editorial Headline input
+    // Caption
     const captionInput = document.getElementById('captionInput');
     if (captionInput) {
       captionInput.addEventListener('input', (e) => {
@@ -422,7 +440,7 @@ class CollageStudioApp {
       });
     }
 
-    // Washi Tape toggle
+    // Toggles
     const tapeToggle = document.getElementById('tapeToggle');
     if (tapeToggle) {
       tapeToggle.addEventListener('change', (e) => {
@@ -431,7 +449,6 @@ class CollageStudioApp {
       });
     }
 
-    // Date stamp toggle
     const dateStampToggle = document.getElementById('dateStampToggle');
     if (dateStampToggle) {
       dateStampToggle.addEventListener('change', (e) => {
@@ -440,40 +457,52 @@ class CollageStudioApp {
       });
     }
 
-    // Interactive Canvas Drag & Drop and Pan
-    this.bindCanvasInteractions();
+    // Canvas Zoom Toolbar
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomFitBtn = document.getElementById('zoomFitBtn');
+    const zoomPercent = document.getElementById('canvasZoomPercent');
+
+    if (zoomInBtn && zoomOutBtn && zoomFitBtn && this.canvasWrapper) {
+      const updateZoom = (z) => {
+        this.viewportZoom = Math.max(0.4, Math.min(2.5, z));
+        this.canvasWrapper.style.transform = `scale(${this.viewportZoom})`;
+        if (zoomPercent) zoomPercent.textContent = `${Math.round(this.viewportZoom * 100)}%`;
+      };
+
+      zoomInBtn.addEventListener('click', () => updateZoom(this.viewportZoom + 0.15));
+      zoomOutBtn.addEventListener('click', () => updateZoom(this.viewportZoom - 0.15));
+      zoomFitBtn.addEventListener('click', () => {
+        this.viewportZoom = 1;
+        this.canvasWrapper.style.transform = 'scale(1)';
+        if (zoomPercent) zoomPercent.textContent = 'Fit';
+      });
+    }
 
     // Inspector controls
     this.bindInspectorControls();
 
-    // Export Modal buttons
+    // Export Controls
     this.bindExportControls();
 
-    // 100 Aesthetic Reference Library Modal Trigger
+    // 100 Styles Modal Triggers
     const openLibraryBtn = document.getElementById('openLibraryBtn');
     const libraryModal = document.getElementById('libraryModal');
     const closeLibraryBtn = document.getElementById('closeLibraryBtn');
 
     if (openLibraryBtn && libraryModal) {
-      openLibraryBtn.addEventListener('click', () => {
-        libraryModal.classList.remove('hidden');
-      });
+      openLibraryBtn.addEventListener('click', () => libraryModal.classList.remove('hidden'));
     }
-
     if (closeLibraryBtn && libraryModal) {
-      closeLibraryBtn.addEventListener('click', () => {
-        libraryModal.classList.add('hidden');
-      });
+      closeLibraryBtn.addEventListener('click', () => libraryModal.classList.add('hidden'));
     }
 
-    // Close modal on background click
     window.addEventListener('click', (e) => {
       if (e.target === libraryModal) libraryModal.classList.add('hidden');
       const exportModal = document.getElementById('exportModal');
       if (e.target === exportModal) exportModal.classList.add('hidden');
     });
 
-    // Keyboard shortcuts
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         this.selectedPhotoIndex = null;
@@ -486,7 +515,7 @@ class CollageStudioApp {
     });
   }
 
-  // --- Interactive Canvas Mouse & Touch Interactions ---
+  // --- Canvas Mouse & Touch Interactions ---
 
   bindCanvasInteractions() {
     const canvas = this.canvas;
@@ -542,7 +571,6 @@ class CollageStudioApp {
         return;
       }
 
-      // Dragging to Pan inside cell
       if (this.selectedPhotoIndex !== null && this.photos[this.selectedPhotoIndex]) {
         this.isPanning = true;
         const cell = this.cells[this.selectedPhotoIndex];
@@ -564,7 +592,6 @@ class CollageStudioApp {
       this.dragCellStartTransform = null;
     });
 
-    // Mouse wheel zoom inside cell
     canvas.addEventListener('wheel', (e) => {
       const coords = getCanvasCoords(e);
       const cellIdx = findCellIndexAt(coords);
@@ -572,14 +599,81 @@ class CollageStudioApp {
         e.preventDefault();
         const photo = this.photos[cellIdx];
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        photo.transform.zoom = Math.max(0.4, Math.min(3.5, (photo.transform.zoom || 1) + delta));
+        photo.transform.zoom = Math.max(0.3, Math.min(3.5, (photo.transform.zoom || 1) + delta));
         this.selectedPhotoIndex = cellIdx;
         this.recomputeAndRender();
       }
     }, { passive: false });
   }
 
-  // --- Inspector Controls (Selected Photo Fine-Tuning) ---
+  // Touch handlers for mobile
+  bindTouchInteractions() {
+    const canvas = this.canvas;
+
+    const getTouchCoords = (e) => {
+      const touch = e.touches[0] || e.changedTouches[0];
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = this.canvasWidth / rect.width;
+      const scaleY = this.canvasHeight / rect.height;
+      return {
+        x: (touch.clientX - rect.left) * scaleX,
+        y: (touch.clientY - rect.top) * scaleY
+      };
+    };
+
+    const findCellIndexAt = (coords) => {
+      for (let i = this.cells.length - 1; i >= 0; i--) {
+        const c = this.cells[i];
+        if (coords.x >= c.x && coords.x <= c.x + c.width && coords.y >= c.y && coords.y <= c.y + c.height) {
+          return i;
+        }
+      }
+      return null;
+    };
+
+    canvas.addEventListener('touchstart', (e) => {
+      const coords = getTouchCoords(e);
+      const clickedCellIndex = findCellIndexAt(coords);
+
+      if (clickedCellIndex !== null) {
+        this.selectedPhotoIndex = clickedCellIndex;
+        this.isMouseDown = true;
+        this.dragStartPos = coords;
+
+        const photo = this.photos[clickedCellIndex];
+        if (photo) {
+          this.dragCellStartTransform = { ...photo.transform };
+        }
+      } else {
+        this.selectedPhotoIndex = null;
+      }
+      this.recomputeAndRender();
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!this.isMouseDown || this.selectedPhotoIndex === null) return;
+      e.preventDefault();
+
+      const coords = getTouchCoords(e);
+      const cell = this.cells[this.selectedPhotoIndex];
+      const dx = coords.x - this.dragStartPos.x;
+      const dy = coords.y - this.dragStartPos.y;
+
+      const photo = this.photos[this.selectedPhotoIndex];
+      const initial = this.dragCellStartTransform || { panX: 0, panY: 0 };
+      photo.transform.panX = initial.panX + (dx / cell.width) * 100;
+      photo.transform.panY = initial.panY + (dy / cell.height) * 100;
+
+      this.recomputeAndRender();
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      this.isMouseDown = false;
+      this.dragCellStartTransform = null;
+    });
+  }
+
+  // --- Selected Photo Inspector ---
 
   bindInspectorControls() {
     const zoomSlider = document.getElementById('photoZoomSlider');
@@ -667,14 +761,14 @@ class CollageStudioApp {
 
     this.photos.forEach((photo, idx) => {
       const item = document.createElement('div');
-      item.className = `relative w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-150 flex-shrink-0 group ${
-        this.selectedPhotoIndex === idx ? 'border-primary shadow-lg ring-2 ring-primary/40' : 'border-zinc-700 hover:border-zinc-500'
+      item.className = `relative w-16 h-16 rounded-xl overflow-hidden border-2 cursor-pointer transition-all duration-150 flex-shrink-0 group ${
+        this.selectedPhotoIndex === idx ? 'border-indigo-500 shadow-lg ring-2 ring-indigo-500/40' : 'border-zinc-700 hover:border-zinc-500'
       }`;
 
       item.innerHTML = `
         <img src="${photo.url}" class="w-full h-full object-cover pointer-events-none" alt="thumb">
-        <span class="absolute bottom-0 left-0 bg-black/70 text-[10px] text-white px-1 rounded-tr font-mono">${idx + 1}</span>
-        <button class="absolute top-0 right-0 bg-red-500/80 hover:bg-red-600 text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-bl opacity-0 group-hover:opacity-100 transition-opacity" title="Remove">✕</button>
+        <span class="absolute bottom-0 left-0 bg-black/80 text-[10px] text-white px-1.5 rounded-tr font-mono">${idx + 1}</span>
+        <button class="absolute top-0 right-0 bg-rose-600/90 hover:bg-rose-600 text-white w-4 h-4 flex items-center justify-center text-[10px] rounded-bl opacity-0 group-hover:opacity-100 transition-opacity" title="Remove">✕</button>
       `;
 
       item.addEventListener('click', (e) => {
@@ -690,7 +784,7 @@ class CollageStudioApp {
     });
   }
 
-  // --- 100 Aesthetic Catalog Modal Renderer ---
+  // --- 100 Aesthetic Style Reference Library Modal ---
 
   renderAestheticCatalogModal() {
     const grid = document.getElementById('libraryGrid');
@@ -711,20 +805,20 @@ class CollageStudioApp {
 
       filtered.forEach(style => {
         const card = document.createElement('div');
-        card.className = 'bg-zinc-900/90 border border-zinc-800 hover:border-primary/60 rounded-xl p-4 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between group';
+        card.className = 'bg-zinc-900/90 border border-zinc-800 hover:border-indigo-500/60 rounded-2xl p-4 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-2xl flex flex-col justify-between group';
 
         card.innerHTML = `
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">#${style.id}</span>
-              <span class="text-[11px] text-primary/80 uppercase tracking-wider font-semibold">${style.category}</span>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-zinc-800 text-zinc-300">#${style.id}</span>
+              <span class="text-[11px] text-indigo-400 uppercase tracking-wider font-semibold">${style.category}</span>
             </div>
-            <h4 class="text-white font-medium text-base mb-1 group-hover:text-primary transition-colors">${style.name}</h4>
+            <h4 class="text-white font-semibold text-base mb-1 group-hover:text-indigo-400 transition-colors">${style.name}</h4>
             <p class="text-xs text-zinc-400 leading-relaxed mb-3">${style.description}</p>
           </div>
           <div class="pt-3 border-t border-zinc-800/80 flex items-center justify-between">
-            <span class="text-[11px] text-zinc-500 italic">${style.mood}</span>
-            <button class="bg-primary hover:bg-primary/90 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-all shadow">Apply</button>
+            <span class="text-[11px] text-zinc-500 italic truncate max-w-[170px]">${style.mood}</span>
+            <button class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-xl font-medium transition-all shadow-md shadow-indigo-600/20">Apply</button>
           </div>
         `;
 
@@ -740,23 +834,22 @@ class CollageStudioApp {
 
     renderItems('all');
 
-    // Filter category pills in modal
     const modalPillContainer = document.getElementById('modalCategoryPills');
     if (modalPillContainer) {
       modalPillContainer.innerHTML = `
-        <button class="modal-cat-pill active text-xs px-3 py-1 rounded-full bg-primary text-white font-medium transition-colors" data-cat="all">All (100)</button>
+        <button class="modal-cat-pill active text-xs px-3 py-1 rounded-full bg-indigo-600 text-white font-medium transition-colors whitespace-nowrap" data-cat="all">All (100)</button>
       `;
       AESTHETIC_CATEGORIES.forEach(cat => {
         const btn = document.createElement('button');
-        btn.className = 'modal-cat-pill text-xs px-3 py-1 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium transition-colors';
+        btn.className = 'modal-cat-pill text-xs px-3 py-1 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium transition-colors whitespace-nowrap';
         btn.dataset.cat = cat.id;
         btn.textContent = `${cat.name} (${cat.count})`;
         btn.addEventListener('click', () => {
           document.querySelectorAll('.modal-cat-pill').forEach(b => {
-            b.classList.remove('active', 'bg-primary', 'text-white');
+            b.classList.remove('active', 'bg-indigo-600', 'text-white');
             b.classList.add('bg-zinc-800', 'text-zinc-300');
           });
-          btn.classList.add('active', 'bg-primary', 'text-white');
+          btn.classList.add('active', 'bg-indigo-600', 'text-white');
           btn.classList.remove('bg-zinc-800', 'text-zinc-300');
           renderItems(cat.id, searchInput ? searchInput.value : '');
         });
@@ -773,37 +866,35 @@ class CollageStudioApp {
     }
   }
 
-  // Quick category pills on the main sidebar
   renderCategoryPills() {
     const container = document.getElementById('quickStylePills');
     if (!container) return;
 
-    // Pick top 12 highlight styles
     const popularStyles = [
-      AESTHETIC_STYLES[0], // Vogue Monograph
-      AESTHETIC_STYLES[1], // Kinfolk Serenity
+      AESTHETIC_STYLES[0],  // Vogue Monograph
+      AESTHETIC_STYLES[1],  // Kinfolk Serenity
       AESTHETIC_STYLES[10], // 90s Polaroid Stack
       AESTHETIC_STYLES[11], // 35mm Filmstrip
       AESTHETIC_STYLES[20], // Washi Tape Grid
+      AESTHETIC_STYLES[23], // Torn Kraft Paper
+      AESTHETIC_STYLES[28], // Corkboard Studio
       AESTHETIC_STYLES[30], // Apple Bento
       AESTHETIC_STYLES[40], // Instagram Carousel
       AESTHETIC_STYLES[43], // Cyberpunk Neon
       AESTHETIC_STYLES[44], // Pastel Marshmallow
-      AESTHETIC_STYLES[46], // Dark Academia
-      AESTHETIC_STYLES[57], // Quad Classic
       AESTHETIC_STYLES[90]  // Botanical Herbarium
     ];
 
     popularStyles.forEach(style => {
       const btn = document.createElement('button');
-      btn.className = 'text-xs text-left px-3 py-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 hover:border-primary/50 transition-all truncate flex items-center justify-between';
-      btn.innerHTML = `<span class="truncate">${style.name}</span><span class="text-[10px] text-zinc-500 font-mono ml-2">#${style.id}</span>`;
+      btn.className = 'text-xs text-left px-3 py-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 hover:border-indigo-500/50 transition-all truncate flex items-center justify-between group';
+      btn.innerHTML = `<span class="truncate group-hover:text-indigo-400 font-medium">${style.name}</span><span class="text-[10px] text-zinc-500 font-mono ml-2">#${style.id}</span>`;
       btn.addEventListener('click', () => this.applyStyle(style));
       container.appendChild(btn);
     });
   }
 
-  // --- Export Controls ---
+  // --- High-Resolution Export Engine ---
 
   bindExportControls() {
     const exportOpenBtn = document.getElementById('exportOpenBtn');
@@ -830,7 +921,7 @@ class CollageStudioApp {
         const ext = format === 'image/jpeg' ? 'jpg' : 'png';
 
         downloadActionBtn.disabled = true;
-        downloadActionBtn.textContent = 'Exporting HD...';
+        downloadActionBtn.textContent = 'Rendering 4K Canvas...';
 
         try {
           const blob = await this.renderer.exportToBlob({
@@ -850,11 +941,11 @@ class CollageStudioApp {
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          this.showToast('কোলাজ সফলভাবে ডাউনলোড হয়েছে! (Export complete)', 'success');
+          this.showToast('High-resolution export downloaded successfully!', 'success');
           exportModal.classList.add('hidden');
         } catch (err) {
           console.error(err);
-          this.showToast('ডাউনলোড ব্যর্থ হয়েছে।', 'error');
+          this.showToast('Export failed. Please check browser permissions.', 'error');
         } finally {
           downloadActionBtn.disabled = false;
           downloadActionBtn.textContent = 'Download High-Res Image';
@@ -866,7 +957,7 @@ class CollageStudioApp {
       copyClipboardBtn.addEventListener('click', async () => {
         try {
           copyClipboardBtn.disabled = true;
-          copyClipboardBtn.textContent = 'Copying...';
+          copyClipboardBtn.textContent = 'Copying to Clipboard...';
 
           const blob = await this.renderer.exportToBlob({
             photos: this.photos,
@@ -880,13 +971,13 @@ class CollageStudioApp {
             new ClipboardItem({ 'image/png': blob })
           ]);
 
-          this.showToast('ক্লিপবোর্ডে কপি সম্পন্ন হয়েছে! (Copied to Clipboard)', 'success');
+          this.showToast('Copied to Clipboard!', 'success');
         } catch (err) {
           console.error(err);
-          this.showToast('ক্লিপবোর্ডে কপি করা যায়নি (Browser permission denied).', 'warning');
+          this.showToast('Could not copy to clipboard (Browser security restricted).', 'warning');
         } finally {
           copyClipboardBtn.disabled = false;
-          copyClipboardBtn.textContent = 'Copy to Clipboard';
+          copyClipboardBtn.textContent = 'Copy Image to Clipboard';
         }
       });
     }
@@ -897,7 +988,7 @@ class CollageStudioApp {
     if (!toast) return;
 
     toast.textContent = message;
-    toast.className = `fixed bottom-6 right-6 px-4 py-2.5 rounded-xl shadow-2xl text-sm font-medium z-50 transition-all duration-300 transform translate-y-0 opacity-100 ${
+    toast.className = `fixed bottom-6 right-6 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold z-50 transition-all duration-300 transform translate-y-0 opacity-100 ${
       type === 'success' ? 'bg-emerald-600 text-white' :
       type === 'warning' ? 'bg-amber-600 text-white' :
       type === 'error' ? 'bg-rose-600 text-white' : 'bg-zinc-800 text-white border border-zinc-700'
@@ -906,11 +997,10 @@ class CollageStudioApp {
     clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => {
       toast.classList.add('opacity-0', 'translate-y-4');
-    }, 3200);
+    }, 3000);
   }
 }
 
-// Initialize Application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new CollageStudioApp();
 });

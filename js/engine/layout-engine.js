@@ -1,13 +1,13 @@
 /**
  * DETERMINISTIC MATHEMATICAL COLLAGE LAYOUT ENGINE
- * Zero Artificial Intelligence. 100% Geometry, Ratio Math & Proportional Grids.
- * Supports 1 to 20 photos seamlessly across all aspect ratios.
+ * Zero AI. 100% Geometry, Ratio Calculations & Proportional Grids.
+ * Seamlessly supports 1 to 20 photos across all standard and custom aspect ratios.
  */
 
 export class LayoutEngine {
   /**
    * Computes exact cell coordinates [x, y, width, height, rotation]
-   * for N photos inside a given canvas dimension with padding and gap.
+   * for N photos inside given canvas dimensions with padding and gap.
    */
   static computeLayout(photoCount, options = {}) {
     const {
@@ -15,7 +15,7 @@ export class LayoutEngine {
       height = 1200,
       padding = 24,
       gap = 14,
-      layoutType = 'auto', // 'auto', 'grid', 'bento', 'polaroid-stack', 'filmstrip', 'masonry'
+      layoutType = 'auto', // 'auto', 'grid', 'bento', 'polaroid-stack', 'filmstrip', 'masonry', 'scatter'
       aspectRatio = '1:1'
     } = options;
 
@@ -24,6 +24,7 @@ export class LayoutEngine {
     const innerH = Math.max(10, height - padding * 2);
 
     switch (layoutType) {
+      case 'scatter':
       case 'polaroid-stack':
         return this.computePolaroidStack(count, innerW, innerH, padding, gap);
       case 'filmstrip':
@@ -41,7 +42,7 @@ export class LayoutEngine {
   }
 
   /**
-   * Smart Aesthetic Layout: Picks the most visually striking layout for count 1..20
+   * Smart Aesthetic Layout: Picks the most visually striking composition for 1..20
    */
   static computeSmartAestheticLayout(count, w, h, pad, gap, canvasW, canvasH) {
     switch (count) {
@@ -50,14 +51,12 @@ export class LayoutEngine {
 
       case 2:
         if (w >= h) {
-          // Horizontal diptych
           const cellW = (w - gap) / 2;
           return [
             { x: pad, y: pad, width: cellW, height: h, rotation: 0 },
             { x: pad + cellW + gap, y: pad, width: cellW, height: h, rotation: 0 }
           ];
         } else {
-          // Vertical diptych
           const cellH = (h - gap) / 2;
           return [
             { x: pad, y: pad, width: w, height: cellH, rotation: 0 },
@@ -67,7 +66,6 @@ export class LayoutEngine {
 
       case 3:
         if (w >= h) {
-          // 1 Large Hero on Left (60%), 2 Stacked on Right (40%)
           const leftW = Math.round((w - gap) * 0.58);
           const rightW = w - gap - leftW;
           const subH = (h - gap) / 2;
@@ -77,7 +75,6 @@ export class LayoutEngine {
             { x: pad + leftW + gap, y: pad + subH + gap, width: rightW, height: subH, rotation: 0 }
           ];
         } else {
-          // 1 Hero on Top, 2 side-by-side bottom
           const topH = Math.round((h - gap) * 0.58);
           const botH = h - gap - topH;
           const subW = (w - gap) / 2;
@@ -92,9 +89,7 @@ export class LayoutEngine {
         return this.computeGrid(4, w, h, pad, gap, 2, 2);
 
       case 5: {
-        // Bento 5: 1 Hero (2x2 relative) + 4 around or 2 top + 3 bottom
         if (w >= h) {
-          // 1 large Left hero (2/3 height, 1/2 width), 1 bottom left, 3 vertical stack right
           const colW = (w - gap) / 2;
           const leftH1 = Math.round((h - gap) * 0.65);
           const leftH2 = h - gap - leftH1;
@@ -107,7 +102,6 @@ export class LayoutEngine {
             { x: pad + colW + gap, y: pad + (rightSubH + gap) * 2, width: colW, height: rightSubH, rotation: 0 }
           ];
         } else {
-          // 2 Top + 3 Bottom
           const topH = (h - gap) * 0.48;
           const botH = h - gap - topH;
           const topCellW = (w - gap) / 2;
@@ -123,14 +117,9 @@ export class LayoutEngine {
       }
 
       case 6:
-        if (w >= h) {
-          return this.computeGrid(6, w, h, pad, gap, 3, 2);
-        } else {
-          return this.computeGrid(6, w, h, pad, gap, 2, 3);
-        }
+        return (w >= h) ? this.computeGrid(6, w, h, pad, gap, 3, 2) : this.computeGrid(6, w, h, pad, gap, 2, 3);
 
       case 7: {
-        // Bento 7: 1 Tall Hero Left + 6 Grid Right (2 cols x 3 rows)
         if (w >= h) {
           const heroW = (w - gap * 2) * 0.4;
           const gridW = w - gap - heroW;
@@ -150,37 +139,25 @@ export class LayoutEngine {
           }
           return cells;
         } else {
-          // 3-1-3 or 1 Hero Top + 6 below
           const heroH = (h - gap) * 0.38;
           const subH = h - gap - heroH;
           const cells = [{ x: pad, y: pad, width: w, height: heroH, rotation: 0 }];
           const subGrid = this.computeGrid(6, w, subH, pad, gap, 3, 2);
-          subGrid.forEach(c => {
-            cells.push({ ...c, y: c.y + heroH + gap });
-          });
+          subGrid.forEach(c => cells.push({ ...c, y: c.y + heroH + gap }));
           return cells;
         }
       }
 
       case 8:
-        if (w >= h) {
-          return this.computeGrid(8, w, h, pad, gap, 4, 2);
-        } else {
-          return this.computeGrid(8, w, h, pad, gap, 2, 4);
-        }
+        return (w >= h) ? this.computeGrid(8, w, h, pad, gap, 4, 2) : this.computeGrid(8, w, h, pad, gap, 2, 4);
 
       case 9:
         return this.computeGrid(9, w, h, pad, gap, 3, 3);
 
       case 10:
-        if (w >= h) {
-          return this.computeGrid(10, w, h, pad, gap, 5, 2);
-        } else {
-          return this.computeGrid(10, w, h, pad, gap, 2, 5);
-        }
+        return (w >= h) ? this.computeGrid(10, w, h, pad, gap, 5, 2) : this.computeGrid(10, w, h, pad, gap, 2, 5);
 
       case 11: {
-        // 1 Hero top + 10 grid (5x2)
         const heroH = (h - gap) * 0.35;
         const subH = h - gap - heroH;
         const cells = [{ x: pad, y: pad, width: w, height: heroH, rotation: 0 }];
@@ -190,14 +167,9 @@ export class LayoutEngine {
       }
 
       case 12:
-        if (w >= h) {
-          return this.computeGrid(12, w, h, pad, gap, 4, 3);
-        } else {
-          return this.computeGrid(12, w, h, pad, gap, 3, 4);
-        }
+        return (w >= h) ? this.computeGrid(12, w, h, pad, gap, 4, 3) : this.computeGrid(12, w, h, pad, gap, 3, 4);
 
       case 13: {
-        // 1 Hero + 12 grid (4x3)
         const heroW = (w - gap) * 0.35;
         const subW = w - gap - heroW;
         const cells = [{ x: pad, y: pad, width: heroW, height: h, rotation: 0 }];
@@ -206,44 +178,25 @@ export class LayoutEngine {
       }
 
       case 14:
-        if (w >= h) {
-          return this.computeGrid(14, w, h, pad, gap, 7, 2);
-        } else {
-          // 4 rows: 3-4-4-3
-          return this.computeMasonry(14, w, h, pad, gap, 3);
-        }
+        return (w >= h) ? this.computeGrid(14, w, h, pad, gap, 7, 2) : this.computeMasonry(14, w, h, pad, gap, 3);
 
       case 15:
-        if (w >= h) {
-          return this.computeGrid(15, w, h, pad, gap, 5, 3);
-        } else {
-          return this.computeGrid(15, w, h, pad, gap, 3, 5);
-        }
+        return (w >= h) ? this.computeGrid(15, w, h, pad, gap, 5, 3) : this.computeGrid(15, w, h, pad, gap, 3, 5);
 
       case 16:
         return this.computeGrid(16, w, h, pad, gap, 4, 4);
 
-      case 17: {
-        // 1 center hero + 16 perimeter or 4x4 + 1
+      case 17:
         return this.computeBento(17, w, h, pad, gap);
-      }
 
       case 18:
-        if (w >= h) {
-          return this.computeGrid(18, w, h, pad, gap, 6, 3);
-        } else {
-          return this.computeGrid(18, w, h, pad, gap, 3, 6);
-        }
+        return (w >= h) ? this.computeGrid(18, w, h, pad, gap, 6, 3) : this.computeGrid(18, w, h, pad, gap, 3, 6);
 
       case 19:
         return this.computeBento(19, w, h, pad, gap);
 
       case 20:
-        if (w >= h) {
-          return this.computeGrid(20, w, h, pad, gap, 5, 4);
-        } else {
-          return this.computeGrid(20, w, h, pad, gap, 4, 5);
-        }
+        return (w >= h) ? this.computeGrid(20, w, h, pad, gap, 5, 4) : this.computeGrid(20, w, h, pad, gap, 4, 5);
 
       default:
         return this.computeGrid(count, w, h, pad, gap);
@@ -278,7 +231,6 @@ export class LayoutEngine {
       const r = Math.floor(i / cols);
       const c = i % cols;
 
-      // Center the last row if it has fewer items
       let offsetX = 0;
       const isLastRow = r === rows - 1;
       const itemsInLastRow = count - r * cols;
@@ -306,14 +258,12 @@ export class LayoutEngine {
       return this.computeSmartAestheticLayout(count, w, h, pad, gap);
     }
 
-    // 1 large hero (spanning 2 rows & 2 cols) + surrounding tiles
     const cols = count > 12 ? 5 : count > 6 ? 4 : 3;
     const rows = Math.ceil((count + 3) / cols);
     const unitW = (w - gap * (cols - 1)) / cols;
     const unitH = (h - gap * (rows - 1)) / rows;
 
     const cells = [];
-    // Hero at top-left
     const heroW = unitW * 2 + gap;
     const heroH = unitH * 2 + gap;
     cells.push({ x: pad, y: pad, width: heroW, height: heroH, rotation: 0 });
@@ -321,7 +271,6 @@ export class LayoutEngine {
     let index = 1;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        // Skip hero area (r:0..1, c:0..1)
         if (r < 2 && c < 2) continue;
         if (index >= count) break;
 
@@ -369,9 +318,8 @@ export class LayoutEngine {
    * Polaroid Stack / Scatter: Slightly angled artistic polaroids
    */
   static computePolaroidStack(count, w, h, pad, gap) {
-    // Generate pseudo-random deterministic rotation angles (-3.5 deg to +3.5 deg)
     const baseGrid = this.computeGrid(count, w, h, pad + 15, gap + 15);
-    const angles = [-2.8, 1.9, -1.2, 3.1, -2.1, 1.4, -3.2, 2.5, -1.8, 2.9, -2.4, 1.7, -3.0, 2.2, -1.5, 3.4, -2.7, 1.1, -1.9, 2.6];
+    const angles = [-2.8, 2.2, -1.4, 3.1, -2.1, 1.6, -3.2, 2.7, -1.8, 2.9, -2.4, 1.7, -3.0, 2.2, -1.5, 3.4, -2.7, 1.1, -1.9, 2.6];
 
     return baseGrid.map((cell, idx) => ({
       ...cell,
@@ -388,16 +336,12 @@ export class LayoutEngine {
     const cols = explicitCols || (count <= 4 ? 2 : count <= 9 ? 3 : count <= 16 ? 4 : 5);
     const colW = (w - gap * (cols - 1)) / cols;
 
-    // Track vertical height of each column
     const colHeights = new Array(cols).fill(0);
     const cells = [];
-
-    // Varied height factors to create aesthetic waterfall rhythm
     const heightWeights = [1.2, 0.9, 1.1, 1.3, 0.85, 1.15, 1.0, 1.25, 0.95, 1.05, 1.2, 0.88, 1.12, 1.0, 1.18, 0.92, 1.08, 1.22, 0.96, 1.04];
     const avgCellH = h / (count / cols);
 
     for (let i = 0; i < count; i++) {
-      // Find shortest column
       let minCol = 0;
       for (let c = 1; c < cols; c++) {
         if (colHeights[c] < colHeights[minCol]) minCol = c;
@@ -417,7 +361,6 @@ export class LayoutEngine {
       colHeights[minCol] += cellH + gap;
     }
 
-    // Normalize vertical scaling so total content fits nicely inside `h`
     const maxHeight = Math.max(...colHeights);
     if (maxHeight > 0) {
       const scaleY = (h - gap) / maxHeight;

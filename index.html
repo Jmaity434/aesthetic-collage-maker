@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bn" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aesthetic Collage Studio - AI-Free Photo Collage Maker</title>
-  <meta name="description" content="Pure deterministic JavaScript aesthetic photo collage maker. Upload up to 20 photos, choose custom frame aspect ratios, explore 100 aesthetic style references, and export in 4K Ultra-HD.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aesthetic Collage Studio — AI-Free Photo Collage Maker</title>
+  <meta name="description" content="Professional deterministic photo collage studio. 1 to 20 photo limit, custom aspect ratios, 100 distinct aesthetic reference styles, and 4K Ultra-HD export. Zero AI.">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&family=VT323&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN for Utility Layouts -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -22,53 +22,62 @@
       theme: {
         extend: {
           colors: {
-            primary: '#6366f1',
-            'primary-hover': '#4f46e5',
-            surface: '#111318',
-            card: 'rgba(20, 23, 31, 0.75)'
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca'
+            }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            mono: ['"Space Grotesk"', 'monospace']
           }
         }
       }
     }
   </script>
 
-  <!-- Custom Design System Stylesheet -->
+  <!-- Custom Design Tokens & Range Stylesheet -->
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-[#090a0d] text-zinc-100 flex flex-col min-h-screen">
+<body class="bg-[#090a0f] text-zinc-100 flex flex-col min-h-screen font-sans selection:bg-brand-500 selection:text-white overflow-hidden">
 
-  <!-- Header Navigation -->
-  <header class="glass-nav h-16 px-5 flex items-center justify-between sticky top-0 z-40">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-bold text-lg">
+  <!-- Top Studio Navigation Bar -->
+  <header class="h-14 sm:h-16 px-4 sm:px-6 bg-[#0e1017]/90 backdrop-blur-xl border-b border-zinc-800/80 flex items-center justify-between z-40 flex-shrink-0">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 text-white font-bold text-sm sm:text-base">
         ✦
       </div>
       <div>
-        <h1 class="font-bold text-base tracking-wide flex items-center gap-2">
-          <span>COLLAGE STUDIO</span>
-          <span class="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded">Zero AI • Pure Canvas</span>
-        </h1>
-        <p class="text-[11px] text-zinc-400">১-২০টি ছবি • কাস্টম ফ্রেম রেশিও • ১০০ এস্থেটিক স্টাইল রেফারেন্স</p>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-sm sm:text-base tracking-wide text-white">AESTHETIC STUDIO</span>
+          <span class="text-[10px] font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded font-medium hidden sm:inline-block">Zero AI • 100% Canvas</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 hidden sm:block">1–20 Photos • Aspect Ratios • 100 Researched Aesthetic Styles</p>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="flex items-center gap-3">
-      <!-- 100 Aesthetic Library Button -->
-      <button id="openLibraryBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/70 hover:border-indigo-400/50 transition-all text-xs font-medium shadow">
-        <span class="text-pink-400">✦</span>
-        <span>১০০ এস্থেটিক স্টাইল লাইব্রেরি</span>
-        <span class="bg-indigo-600/40 text-indigo-300 text-[10px] font-mono px-1.5 py-0.5 rounded">100</span>
+    <!-- Quick Studio Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- 100 Styles Modal Button -->
+      <button id="openLibraryBtn" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-indigo-400/50 transition-all text-xs font-medium shadow group">
+        <span class="text-pink-400 group-hover:scale-110 transition-transform">✦</span>
+        <span class="hidden md:inline">100 Aesthetic Styles</span>
+        <span class="md:hidden">100 Styles</span>
+        <span class="bg-indigo-500/30 text-indigo-300 text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold">100</span>
       </button>
 
-      <!-- Aspect Ratio Quick Selector -->
-      <div class="flex items-center gap-1.5 bg-zinc-800/80 px-2 py-1 rounded-xl border border-zinc-700/60">
-        <span class="text-[11px] text-zinc-400 font-medium pl-1">রেশিও:</span>
-        <select id="aspectRatioSelect" class="bg-transparent text-xs text-zinc-200 border-none p-1 focus:ring-0 cursor-pointer">
+      <!-- Frame Aspect Ratio Quick Selector -->
+      <div class="flex items-center bg-zinc-800/80 rounded-xl border border-zinc-700 px-2 py-0.5">
+        <span class="text-[11px] text-zinc-400 font-medium pl-1 hidden lg:inline">Ratio:</span>
+        <select id="aspectRatioSelect" class="bg-transparent text-xs text-zinc-200 border-none py-1 px-1 focus:ring-0 cursor-pointer font-medium outline-none">
           <option value="4:5">4:5 (Instagram Feed)</option>
-          <option value="1:1">1:1 (Square)</option>
-          <option value="9:16">9:16 (Story / Reels / TikTok)</option>
-          <option value="16:9">16:9 (Landscape / Desktop)</option>
+          <option value="1:1">1:1 (Square Album)</option>
+          <option value="9:16">9:16 (Story / Reel)</option>
+          <option value="16:9">16:9 (Landscape)</option>
           <option value="3:4">3:4 (Classic Portrait)</option>
           <option value="4:3">4:3 (Classic Photo)</option>
           <option value="2:3">2:3 (35mm Print)</option>
@@ -78,273 +87,327 @@
         </select>
       </div>
 
-      <!-- Export High-Res Button -->
-      <button id="exportOpenBtn" class="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/25 transition-all">
-        <span>ডাউনলোড (Export HD)</span>
+      <!-- Export High-Res Modal Trigger -->
+      <button id="exportOpenBtn" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all">
+        <span>Export</span>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       </button>
     </div>
   </header>
 
-  <!-- Main App Workspace -->
-  <main class="flex-1 flex overflow-hidden">
+  <!-- Studio Workspace Area -->
+  <div class="flex-1 flex overflow-hidden relative">
 
-    <!-- Left Controls Sidebar -->
-    <aside class="w-80 border-r border-white/5 bg-[#0e1015]/90 backdrop-blur-xl flex flex-col h-[calc(100vh-64px)] overflow-y-auto">
+    <!-- Desktop Sidebar / Mobile Drawer Overlay -->
+    <aside id="studioSidebar" class="w-full md:w-84 lg:w-96 bg-[#0f1118]/95 backdrop-blur-2xl border-r border-zinc-800/80 flex flex-col h-[calc(100vh-112px)] md:h-[calc(100vh-64px)] overflow-y-auto z-30 transition-all duration-200 md:static absolute inset-x-0 bottom-0 top-0 hidden md:flex">
 
-      <!-- Section: Photo Upload & Strip -->
-      <div class="p-4 border-b border-white/5 space-y-3">
+      <!-- Navigation Tabs inside Sidebar (Mobile & Desktop) -->
+      <div class="flex items-center border-b border-zinc-800/80 bg-zinc-900/50 sticky top-0 z-10 px-2 pt-2">
+        <button class="sidebar-tab active flex-1 py-2 text-xs font-medium text-center border-b-2 border-indigo-500 text-indigo-400" data-tab="photos">Media</button>
+        <button class="sidebar-tab flex-1 py-2 text-xs font-medium text-center border-b-2 border-transparent text-zinc-400 hover:text-zinc-200" data-tab="layout">Layout</button>
+        <button class="sidebar-tab flex-1 py-2 text-xs font-medium text-center border-b-2 border-transparent text-zinc-400 hover:text-zinc-200" data-tab="style">Style & Decor</button>
+        <button class="sidebar-tab flex-1 py-2 text-xs font-medium text-center border-b-2 border-transparent text-zinc-400 hover:text-zinc-200" data-tab="catalog">Presets</button>
+      </div>
+
+      <!-- TAB PANEL 1: PHOTOS & MEDIA (1 TO 20) -->
+      <div id="tabPhotos" class="tab-panel p-4 space-y-4">
         <div class="flex items-center justify-between">
-          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-            <span>ছবি নির্বাচন</span>
+          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+            <span>Upload Photos</span>
             <span id="photoCountBadge" class="bg-indigo-500/20 text-indigo-400 font-mono text-[10px] px-2 py-0.5 rounded-full border border-indigo-500/30">0 / 20</span>
           </label>
           <div class="flex items-center gap-2">
-            <button id="loadDemoBtn" class="text-[11px] text-indigo-400 hover:text-indigo-300 underline" title="নমুনা ছবি লোড করুন">ডেমো ছবি</button>
-            <button id="clearAllBtn" class="text-[11px] text-zinc-500 hover:text-red-400" title="সব ছবি মুছুন">মুছুন</button>
+            <button id="loadDemoBtn" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Load Demo</button>
+            <button id="clearAllBtn" class="text-xs text-zinc-500 hover:text-rose-400">Clear</button>
           </div>
         </div>
 
         <!-- Drag & Drop Upload Zone -->
-        <div id="uploadDropzone" class="border-2 border-dashed border-zinc-700/80 hover:border-indigo-500/60 rounded-xl p-3.5 text-center cursor-pointer transition-colors bg-white/[0.02] hover:bg-white/[0.04] group">
+        <div id="uploadDropzone" class="border-2 border-dashed border-zinc-700/80 hover:border-indigo-500/80 rounded-2xl p-4 text-center cursor-pointer transition-all bg-zinc-900/30 hover:bg-zinc-900/60 group">
           <input type="file" id="photoFileInput" multiple accept="image/*" class="hidden">
-          <div class="w-8 h-8 mx-auto mb-1.5 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
           </div>
-          <p class="text-xs font-medium text-zinc-300">ছবি আপলোড করতে ক্লিক বা ড্র্যাগ করুন</p>
-          <p class="text-[10px] text-zinc-500 mt-0.5">১ থেকে ২০টি ছবি নির্বাচন করা যাবে (JPG, PNG, WebP)</p>
+          <p class="text-xs font-semibold text-zinc-200">Click or Drag & Drop Photos</p>
+          <p class="text-[11px] text-zinc-500 mt-1">Select 1 up to 20 images (JPG, PNG, WebP)</p>
         </div>
 
-        <!-- Photo Thumbnails Strip -->
-        <div id="photoThumbnailStrip" class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 min-h-[72px]">
-          <!-- Dynamic thumbnails populated by JS -->
+        <!-- Photo Thumbnail Strip -->
+        <div>
+          <span class="text-[11px] font-medium text-zinc-400 block mb-2">Uploaded Gallery (Reorder & Select):</span>
+          <div id="photoThumbnailStrip" class="flex items-center gap-2 overflow-x-auto pb-2 min-h-[72px]">
+            <!-- Injected by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Selected Photo Inspector -->
+        <div id="photoInspectorCard" class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 space-y-3 opacity-40 pointer-events-none transition-all">
+          <div class="flex items-center justify-between">
+            <span id="inspectorTitle" class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Photo Inspector</span>
+            <span id="photoZoomVal" class="text-xs font-mono text-zinc-400">100%</span>
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-400 block mb-1">Zoom Photo inside Cell:</label>
+            <input type="range" id="photoZoomSlider" min="0.4" max="3" step="0.05" value="1">
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 pt-1">
+            <button id="rotatePhotoBtn" class="py-1.5 px-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Rotate 90° Clockwise">⟳ 90°</button>
+            <button id="flipHPhotoBtn" class="py-1.5 px-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Flip Horizontal">⇆ Flip H</button>
+            <button id="flipVPhotoBtn" class="py-1.5 px-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Flip Vertical">⇅ Flip V</button>
+            <button id="deletePhotoBtn" class="py-1.5 px-2 rounded-lg bg-rose-900/30 hover:bg-rose-900/60 text-xs text-rose-300 border border-rose-800/40 transition" title="Delete">✕ Del</button>
+          </div>
+          <p class="text-[10px] text-zinc-500 italic">Tip: Click and drag directly on any photo in the canvas to pan.</p>
         </div>
       </div>
 
-      <!-- Section: Layout Archetypes -->
-      <div class="p-4 border-b border-white/5 space-y-3">
-        <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">লেআউট আর্কিটাইপ (Layout Style)</label>
-        <select id="layoutTypeSelect" class="w-full">
-          <option value="auto">✦ স্মার্ট অটো লেআউট (Smart Algorithmic)</option>
-          <option value="bento">▦ মডার্ন বেন্টো গ্রিড (Modern Bento Matrix)</option>
-          <option value="polaroid-stack">📷 পোলারয়েড স্ট্যাক (Polaroid Angle Stack)</option>
-          <option value="filmstrip">🎞️ ৩৫মিমি ফিল্মস্ট্রিপ (35mm Filmstrip Contact)</option>
-          <option value="masonry">🧱 ম্যাসনরি ওয়াটারফল (Masonry Waterfall)</option>
-          <option value="grid">⊞ ক্লাসিক ইউনিফর্ম গ্রিড (Classic Uniform Grid)</option>
-        </select>
-      </div>
-
-      <!-- Section: Selected Photo Fine-Tuner -->
-      <div id="photoInspectorCard" class="p-4 border-b border-white/5 space-y-3 opacity-40 pointer-events-none transition-opacity">
-        <div class="flex items-center justify-between">
-          <span id="inspectorTitle" class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">সিলেক্টেড ফটো এডিটর</span>
-          <span id="photoZoomVal" class="text-xs font-mono text-zinc-400">100%</span>
-        </div>
+      <!-- TAB PANEL 2: LAYOUT ARCHETYPES -->
+      <div id="tabLayout" class="tab-panel p-4 space-y-4 hidden">
         <div>
-          <label class="text-[11px] text-zinc-400 block mb-1">জুম (Zoom In / Out):</label>
-          <input type="range" id="photoZoomSlider" min="0.5" max="3" step="0.05" value="1">
-        </div>
-        <div class="flex items-center gap-2 pt-1">
-          <button id="rotatePhotoBtn" class="flex-1 py-1.5 px-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Rotate 90 degrees">⟳ ৯০° ঘোরান</button>
-          <button id="flipHPhotoBtn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Flip Horizontal">⇆ ফ্লিপ H</button>
-          <button id="flipVPhotoBtn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-zinc-700 transition" title="Flip Vertical">⇅ ফ্লিপ V</button>
-          <button id="deletePhotoBtn" class="p-1.5 rounded-lg bg-red-900/40 hover:bg-red-800/60 text-xs text-red-300 border border-red-700/50 transition" title="Remove Photo">✕ মুছুন</button>
-        </div>
-        <p class="text-[10px] text-zinc-500 italic">টিপস: ছবির ওপর মাউস টেনে রিয়েল টাইমে প্যান (re-position) করতে পারেন।</p>
-      </div>
-
-      <!-- Section: Sliders & Framing Controls -->
-      <div class="p-4 border-b border-white/5 space-y-3.5">
-        <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">ফ্রেম ও স্পেসিং কন্ট্রোল</label>
-
-        <!-- Frame Gap Slider -->
-        <div>
-          <div class="flex justify-between text-xs mb-1">
-            <span class="text-zinc-400">ছবির মাঝের ফাঁকা (Gap):</span>
-            <span id="gapVal" class="font-mono text-zinc-300">16px</span>
-          </div>
-          <input type="range" id="gapSlider" min="0" max="50" step="2" value="16">
-        </div>
-
-        <!-- Corner Radius Slider -->
-        <div>
-          <div class="flex justify-between text-xs mb-1">
-            <span class="text-zinc-400">কোণার গোলত্ব (Radius):</span>
-            <span id="radiusVal" class="font-mono text-zinc-300">6px</span>
-          </div>
-          <input type="range" id="radiusSlider" min="0" max="40" step="1" value="6">
-        </div>
-
-        <!-- Outer Padding Slider -->
-        <div>
-          <div class="flex justify-between text-xs mb-1">
-            <span class="text-zinc-400">বাইরের মার্জিন (Padding):</span>
-            <span id="paddingVal" class="font-mono text-zinc-300">32px</span>
-          </div>
-          <input type="range" id="paddingSlider" min="0" max="80" step="2" value="32">
-        </div>
-
-        <!-- Frame Style Selector -->
-        <div>
-          <label class="text-[11px] text-zinc-400 block mb-1">ফ্রেম স্টাইল:</label>
-          <select id="frameStyleSelect" class="w-full">
-            <option value="clean">ক্লিন মিনিমাল (Clean Minimal)</option>
-            <option value="polaroid">পোলারয়েড মাউন্ট (Polaroid Chin)</option>
-            <option value="filmstrip">৩৫মিমি ফিল্মস্ট্রিপ পারফোরেশন</option>
-            <option value="passepartout">মিউজিয়াম পাসপার্টু (Museum Double Frame)</option>
-            <option value="floating-shadow">ফ্লোটিং শ্যাডো (Floating Shadow)</option>
+          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block mb-2">Geometric Layout Engine</label>
+          <select id="layoutTypeSelect" class="w-full">
+            <option value="auto">✦ Smart Algorithmic Layout</option>
+            <option value="bento">▦ Modern Bento Grid Matrix</option>
+            <option value="polaroid-stack">📷 Polaroid Angled Stack</option>
+            <option value="filmstrip">🎞️ 35mm Filmstrip Contact Sheet</option>
+            <option value="masonry">🧱 Dynamic Masonry Waterfall</option>
+            <option value="grid">⊞ Classical Uniform Grid</option>
           </select>
         </div>
-      </div>
 
-      <!-- Section: Background & Aesthetic Color Palettes -->
-      <div class="p-4 border-b border-white/5 space-y-3">
-        <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">ব্যাকগ্রাউন্ড ও কালার প্যালেট</label>
-        
-        <div class="flex items-center gap-2">
-          <input type="color" id="bgColorInput" value="#FAF9F6" class="w-8 h-8 rounded border border-white/20 cursor-pointer bg-transparent">
-          <span class="text-xs text-zinc-400">কাস্টম ব্যাকগ্রাউন্ড কালার</span>
-        </div>
-
-        <!-- Aesthetic Swatches -->
-        <div class="grid grid-cols-6 gap-2 pt-1">
-          <button class="palette-swatch" data-color="#FAF9F6" style="background-color: #FAF9F6" title="Bone Cream"></button>
-          <button class="palette-swatch" data-color="#F4EFEA" style="background-color: #F4EFEA" title="Kinfolk Linen"></button>
-          <button class="palette-swatch" data-color="#EAE3D2" style="background-color: #EAE3D2" title="Kraft Warm"></button>
-          <button class="palette-swatch" data-color="#12141A" style="background-color: #12141A" title="Obsidian Dark"></button>
-          <button class="palette-swatch" data-color="#1F1A17" style="background-color: #1F1A17" title="Espresso Wood"></button>
-          <button class="palette-swatch" data-color="#2A1B3D" style="background-color: #2A1B3D" title="Lo-Fi Twilight"></button>
-        </div>
-      </div>
-
-      <!-- Section: Aesthetic Accents & Typography -->
-      <div class="p-4 border-b border-white/5 space-y-3.5">
-        <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">এস্থেটিক ডিটেলস ও ওভারলে</label>
-
-        <!-- Film Grain Slider -->
-        <div>
-          <div class="flex justify-between text-xs mb-1">
-            <span class="text-zinc-400">অ্যানালগ ফিল্ম গ্রেইন (Grain):</span>
-            <span id="grainVal" class="font-mono text-zinc-300">10%</span>
+        <!-- Frame Spacing Sliders -->
+        <div class="space-y-3 pt-2">
+          <!-- Gap -->
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-400">Inter-Photo Gap:</span>
+              <span id="gapVal" class="font-mono text-zinc-300">16px</span>
+            </div>
+            <input type="range" id="gapSlider" min="0" max="50" step="2" value="16">
           </div>
-          <input type="range" id="grainSlider" min="0" max="45" step="1" value="10">
-        </div>
 
-        <!-- Washi Tape Toggle -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-zinc-300">ওয়াশি টেপ কর্নার (Washi Tape):</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="tapeToggle" class="sr-only peer">
-            <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-          </label>
-        </div>
+          <!-- Radius -->
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-400">Corner Rounding:</span>
+              <span id="radiusVal" class="font-mono text-zinc-300">6px</span>
+            </div>
+            <input type="range" id="radiusSlider" min="0" max="40" step="1" value="6">
+          </div>
 
-        <!-- Date Stamp Toggle -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-zinc-300">ক্যামেরা ডেট স্ট্যাম্প ('26 10 18):</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="dateStampToggle" class="sr-only peer">
-            <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-          </label>
-        </div>
-
-        <!-- Caption / Headline -->
-        <div>
-          <label class="text-[11px] text-zinc-400 block mb-1">এডিটরিয়াল ক্যাপশন / টাইটেল:</label>
-          <input type="text" id="captionInput" placeholder="e.g. AUTUMN MEMORIES // 2026" class="w-full">
+          <!-- Padding -->
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-400">Outer Canvas Margin:</span>
+              <span id="paddingVal" class="font-mono text-zinc-300">32px</span>
+            </div>
+            <input type="range" id="paddingSlider" min="0" max="80" step="2" value="32">
+          </div>
         </div>
       </div>
 
-      <!-- Section: Popular Style Presets Quick Bar -->
-      <div class="p-4 space-y-2">
-        <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">জনপ্রিয় এস্থেটিক প্রিসেট</label>
-        <div id="quickStylePills" class="flex flex-col gap-1.5">
-          <!-- Populated by JS -->
+      <!-- TAB PANEL 3: STYLE, BACKGROUND & DECOR -->
+      <div id="tabStyle" class="tab-panel p-4 space-y-4 hidden">
+        <!-- Frame Treatment -->
+        <div>
+          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block mb-2">Foreground Frame Style</label>
+          <select id="frameStyleSelect" class="w-full">
+            <option value="clean">Clean Minimal Edge</option>
+            <option value="polaroid">Polaroid Chin Mount</option>
+            <option value="filmstrip">35mm Film Perforations</option>
+            <option value="torn">Deckled Torn Paper Edge</option>
+            <option value="stamp">Scalloped Postage Stamp</option>
+            <option value="passepartout">Museum Double Passepartout</option>
+            <option value="super8">Super 8 Curved Aperture</option>
+            <option value="cyber">Cyber HUD Tech Brackets</option>
+            <option value="floating-shadow">Deep Floating Shadow</option>
+          </select>
+        </div>
+
+        <!-- Background & Textures -->
+        <div class="space-y-2.5">
+          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Background Texture & Mood</label>
+          <div class="flex items-center gap-3">
+            <input type="color" id="bgColorInput" value="#FAF9F6" class="w-9 h-9 rounded-xl border border-white/20 cursor-pointer bg-transparent">
+            <span class="text-xs text-zinc-400 font-medium">Custom Palette Color</span>
+          </div>
+
+          <div class="grid grid-cols-6 gap-2 pt-1">
+            <button class="palette-swatch" data-color="#FAF9F6" style="background-color: #FAF9F6" title="Bone Cream"></button>
+            <button class="palette-swatch" data-color="#F4EFEA" style="background-color: #F4EFEA" title="Kinfolk Linen"></button>
+            <button class="palette-swatch" data-color="#EAE3D2" style="background-color: #EAE3D2" title="Kraft Paper"></button>
+            <button class="palette-swatch" data-color="#12141A" style="background-color: #12141A" title="Obsidian Dark"></button>
+            <button class="palette-swatch" data-color="#1F1A17" style="background-color: #1F1A17" title="Espresso Wood"></button>
+            <button class="palette-swatch" data-color="#2A1B3D" style="background-color: #2A1B3D" title="Lo-Fi Twilight"></button>
+          </div>
+        </div>
+
+        <!-- Artistic Accents -->
+        <div class="space-y-3 pt-2">
+          <!-- Film Grain -->
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-zinc-400">Analog Film Grain:</span>
+              <span id="grainVal" class="font-mono text-zinc-300">10%</span>
+            </div>
+            <input type="range" id="grainSlider" min="0" max="45" step="1" value="10">
+          </div>
+
+          <!-- Washi Tape -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-zinc-300 font-medium">Torn Washi Tape Corners:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="tapeToggle" class="sr-only peer">
+              <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+            </label>
+          </div>
+
+          <!-- Date Stamp -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-zinc-300 font-medium">Retro Camera Date Stamp:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="dateStampToggle" class="sr-only peer">
+              <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+            </label>
+          </div>
+
+          <!-- Caption -->
+          <div>
+            <label class="text-[11px] text-zinc-400 block mb-1">Editorial Title / Metadata:</label>
+            <input type="text" id="captionInput" placeholder="e.g. AUTUMN MEMORIES // VOL. IV" class="w-full">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 4: POPULAR STYLES PRESETS -->
+      <div id="tabCatalog" class="tab-panel p-4 space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-zinc-300 uppercase tracking-wider block">Curated Style Presets</label>
+          <button id="openCatalogFromTabBtn" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">View All 100</button>
+        </div>
+        <div id="quickStylePills" class="flex flex-col gap-2">
+          <!-- Injected by JavaScript -->
         </div>
       </div>
     </aside>
 
-    <!-- Center Canvas Stage -->
-    <section class="flex-1 canvas-viewport">
-      <div class="canvas-container">
+    <!-- Canvas Central Stage Viewport -->
+    <main class="flex-1 canvas-viewport relative">
+      <!-- Floating Canvas Fit / Zoom Toolbar -->
+      <div class="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md border border-zinc-700/80 rounded-xl p-1 shadow-xl">
+        <button id="zoomOutBtn" class="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-semibold transition" title="Zoom Out">−</button>
+        <span id="canvasZoomPercent" class="text-xs font-mono text-zinc-400 px-2 min-w-[48px] text-center">Fit</span>
+        <button id="zoomInBtn" class="w-7 h-7 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-semibold transition" title="Zoom In">+</button>
+        <button id="zoomFitBtn" class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition" title="Fit to Screen">Fit</button>
+      </div>
+
+      <!-- Interactive Canvas Element -->
+      <div id="canvasWrapper" class="canvas-container transition-transform duration-100 ease-out">
         <canvas id="collageCanvas"></canvas>
       </div>
-    </section>
-  </main>
+
+      <!-- Subtle Canvas Helper Notice -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-[11px] text-zinc-400 font-medium pointer-events-none hidden sm:block">
+        ✦ Click & Drag photo inside cell to Pan • Mouse wheel to Zoom • Click photo thumbnail to inspect
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar (Visible on mobile/tablet) -->
+  <nav class="md:hidden h-14 bg-[#0e1017] border-t border-zinc-800 flex items-center justify-around z-40 flex-shrink-0 px-2">
+    <button class="mobile-nav-btn active flex flex-col items-center justify-center gap-1 text-indigo-400 py-1" data-tab="photos">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <span class="text-[10px] font-medium">Photos</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-zinc-400 hover:text-zinc-200 py-1" data-tab="layout">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+      <span class="text-[10px] font-medium">Layout</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-zinc-400 hover:text-zinc-200 py-1" data-tab="style">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+      <span class="text-[10px] font-medium">Framing</span>
+    </button>
+    <button class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-zinc-400 hover:text-zinc-200 py-1" data-tab="catalog">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      <span class="text-[10px] font-medium">Styles</span>
+    </button>
+  </nav>
 
   <!-- MODAL: 100 Aesthetic Style Reference Library -->
-  <div id="libraryModal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 hidden">
-    <div class="bg-[#12141c] border border-zinc-700/80 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in">
+  <div id="libraryModal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="bg-[#11131c] border border-zinc-700/80 rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in">
       <!-- Modal Header -->
-      <div class="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/60">
+      <div class="p-4 sm:p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/80">
         <div>
-          <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            <span>১০০ এস্থেটিক কোলাজ রেফারেন্স ও আর্কিটাইপ</span>
-            <span class="text-xs font-mono bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2 py-0.5 rounded-full">100 Styles</span>
+          <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <span>100 Aesthetic Collage Reference Library</span>
+            <span class="text-xs font-mono bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2 py-0.5 rounded-full font-semibold">100 Styles</span>
           </h3>
-          <p class="text-xs text-zinc-400 mt-0.5">গভীর গবেষণার ভিত্তিতে সংগৃহীত ১০০টি ভিন্ন ভিন্ন এস্থেটিক ডিজাইন মুডবোর্ড ও প্রিসেট</p>
+          <p class="text-xs text-zinc-400 mt-0.5">Explore 100 meticulously researched aesthetic collage archetypes and instant presets.</p>
         </div>
         <button id="closeLibraryBtn" class="text-zinc-400 hover:text-white p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition">✕</button>
       </div>
 
       <!-- Search & Category Filters -->
-      <div class="p-4 border-b border-zinc-800/80 bg-zinc-900/40 space-y-3">
-        <input type="text" id="librarySearchInput" placeholder="স্টাইলের নাম বা মুড দিয়ে সার্চ করুন (যেমন: polaroid, vintage, bento, minimalist...)" class="w-full bg-zinc-800/90 border border-zinc-700 text-sm py-2 px-3.5 rounded-xl">
+      <div class="p-3 sm:p-4 border-b border-zinc-800/80 bg-zinc-900/40 space-y-3">
+        <input type="text" id="librarySearchInput" placeholder="Search by name, mood or tag (e.g. polaroid, vintage, bento, minimalist, filmstrip...)" class="w-full bg-zinc-800/90 border border-zinc-700 text-sm py-2 px-3.5 rounded-xl text-zinc-100 placeholder-zinc-500">
         <div id="modalCategoryPills" class="flex items-center gap-1.5 overflow-x-auto pb-1">
-          <!-- Populated by JS -->
+          <!-- Populated by JavaScript -->
         </div>
       </div>
 
       <!-- Grid of 100 Styles -->
-      <div id="libraryGrid" class="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- 100 Cards Populated by JS -->
+      <div id="libraryGrid" class="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 100 Cards Injected by JavaScript -->
       </div>
     </div>
   </div>
 
   <!-- MODAL: High-Res Export Modal -->
   <div id="exportModal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4 hidden">
-    <div class="bg-[#14161f] border border-zinc-700/80 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5 animate-fade-in">
+    <div class="bg-[#13151f] border border-zinc-700/80 rounded-2xl w-full max-w-md p-5 sm:p-6 shadow-2xl space-y-5 animate-fade-in">
       <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-        <h3 class="text-base font-bold text-white">কোলাজ ডাউনলোড (High-Res Export)</h3>
+        <div>
+          <h3 class="text-base font-bold text-white">Export Collage</h3>
+          <p class="text-xs text-zinc-400">Deterministic high-resolution canvas rendering</p>
+        </div>
         <button id="closeExportBtn" class="text-zinc-400 hover:text-white p-1 rounded-lg">✕</button>
       </div>
 
       <div class="space-y-4">
         <div>
-          <label class="text-xs text-zinc-300 block mb-1 font-medium">এক্সপোর্ট রেজোলিউশন (Resolution):</label>
+          <label class="text-xs text-zinc-300 block mb-1 font-medium">Export Resolution:</label>
           <select id="exportScaleSelect" class="w-full bg-zinc-800 border-zinc-700 text-xs">
-            <option value="2">2x HD (ক্রিস্টাল ক্লিয়ার সোশ্যাল মিডিয়া - recommended)</option>
-            <option value="4">4x Ultra HD (হাই-রেজোলিউশন আর্ট প্রিন্ট / 4K)</option>
-            <option value="1">1x Standard Web (ছোট সাইজ / ফাস্ট শেয়ার)</option>
+            <option value="2">2x HD (Crystal-clear social media — Recommended)</option>
+            <option value="4">4x Ultra HD (High-resolution art print / 4K)</option>
+            <option value="1">1x Standard Web (Fast sharing)</option>
           </select>
         </div>
 
         <div>
-          <label class="text-xs text-zinc-300 block mb-1 font-medium">ফাইল ফরম্যাট (File Format):</label>
+          <label class="text-xs text-zinc-300 block mb-1 font-medium">File Format:</label>
           <select id="exportFormatSelect" class="w-full bg-zinc-800 border-zinc-700 text-xs">
-            <option value="image/png">PNG (সর্বোচ্চ স্পষ্টতা ও কোয়ালিটি)</option>
-            <option value="image/jpeg">JPEG (হালকা ফাইল সাইজ)</option>
+            <option value="image/png">PNG (Maximum clarity & lossless quality)</option>
+            <option value="image/jpeg">JPEG (Compact file size)</option>
           </select>
         </div>
       </div>
 
       <div class="pt-2 space-y-2">
         <button id="downloadActionBtn" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
-          <span>ইমেজ ডাউনলোড করুন</span>
+          <span>Download High-Res Image</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         </button>
         <button id="copyClipboardBtn" class="w-full py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-xs border border-zinc-700 transition">
-          ক্লিপবোর্ডে কপি করুন (Copy to Clipboard)
+          Copy Image to Clipboard
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
+  <!-- Toast Notification Box -->
   <div id="toast" class="fixed bottom-6 right-6 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-medium z-50 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none"></div>
 
-  <!-- Main JavaScript Application Modules -->
+  <!-- Application Controller -->
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>
