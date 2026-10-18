@@ -1,10 +1,114 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#ec4899" />
+    <!-- Soft diffuse drop shadows -->
+    <filter id="shadow-deep" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+    <filter id="shadow-hero" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="1" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.48"/>
+    </filter>
+
+    <!-- Warm outdoor sky-to-earth aesthetic gradients -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="55%" stop-color="#BAE6FD"/>
+      <stop offset="56%" stop-color="#F472B6"/>
+      <stop offset="78%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#4ADE80"/>
+    </linearGradient>
+
+    <linearGradient id="warmSunset" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F43F5E"/>
+      <stop offset="45%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+
+    <linearGradient id="coolSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="65%" stop-color="#7DD3FC"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+
+    <linearGradient id="tapeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FDE047" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#FBBF24" stop-opacity="0.75"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#grad)" />
-  <path d="M32 14L36 26L48 30L36 34L32 46L28 34L16 30L28 26Z" fill="#ffffff" />
+
+  <!-- Dark sleek backdrop container with smooth rounded corners -->
+  <rect width="128" height="128" rx="28" fill="#0D0E15"/>
+  <rect width="126" height="126" x="1" y="1" rx="27" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Background Polaroid 1 (Tilted Left) -->
+  <g transform="translate(18, 22) rotate(-14)" filter="url(#shadow-deep)">
+    <rect width="52" height="62" rx="2" fill="#FFFFFF"/>
+    <rect x="4" y="4" width="44" height="42" rx="1" fill="url(#warmSunset)"/>
+    <!-- Simulated mini silhouettes/horizon -->
+    <circle cx="26" cy="24" r="8" fill="rgba(255,255,255,0.3)"/>
+    <rect x="4" y="46" width="44" height="12" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Background Polaroid 2 (Tilted Right) -->
+  <g transform="translate(62, 16) rotate(12)" filter="url(#shadow-deep)">
+    <rect width="50" height="60" rx="2" fill="#F8FAFC"/>
+    <rect x="4" y="4" width="42" height="40" rx="1" fill="url(#coolSky)"/>
+    <!-- Simulated figures -->
+    <ellipse cx="25" cy="30" rx="12" ry="6" fill="#166534" fill-opacity="0.6"/>
+    <circle cx="25" cy="20" r="6" fill="#FDE047" fill-opacity="0.8"/>
+    <rect x="4" y="44" width="42" height="12" fill="#F8FAFC"/>
+  </g>
+
+  <!-- Background Polaroid 3 (Bottom Left Layer) -->
+  <g transform="translate(12, 60) rotate(8)" filter="url(#shadow-deep)">
+    <rect width="48" height="56" rx="2" fill="#F1F5F9"/>
+    <rect x="4" y="4" width="40" height="38" rx="1" fill="url(#warmSunset)"/>
+  </g>
+
+  <!-- Background Polaroid 4 (Bottom Right Layer) -->
+  <g transform="translate(70, 62) rotate(-10)" filter="url(#shadow-deep)">
+    <rect width="48" height="58" rx="2" fill="#FFFFFF"/>
+    <rect x="4" y="4" width="40" height="40" rx="1" fill="url(#coolSky)"/>
+  </g>
+
+  <!-- HERO CENTER POLAROID (Matching the user's reference hero photo) -->
+  <g transform="translate(28, 26)" filter="url(#shadow-hero)">
+    <!-- White Polaroid Paper Frame with classic wide bottom chin -->
+    <rect width="72" height="86" rx="3" fill="#FFFFFF"/>
+    
+    <!-- Photo Window -->
+    <rect x="5.5" y="5.5" width="61" height="58" rx="2" fill="url(#skyGrad)"/>
+
+    <!-- Subtle inner photo border -->
+    <rect x="5.5" y="5.5" width="61" height="58" rx="2" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+
+    <!-- Center aesthetic silhouettes (Group of friends looking up at sunny sky) -->
+    <!-- Clouds -->
+    <ellipse cx="20" cy="18" rx="10" ry="4" fill="rgba(255,255,255,0.7)"/>
+    <ellipse cx="48" cy="14" rx="8" ry="3.5" fill="rgba(255,255,255,0.6)"/>
+    
+    <!-- Group figures (stylized vector) -->
+    <circle cx="36" cy="32" r="5" fill="#78350F"/>
+    <path d="M28 44 C28 37, 44 37, 44 44 Z" fill="#D97706"/>
+
+    <circle cx="24" cy="35" r="4.5" fill="#9D174D"/>
+    <path d="M18 46 C18 40, 31 40, 31 46 Z" fill="#BE185D"/>
+
+    <circle cx="48" cy="34" r="4.5" fill="#047857"/>
+    <path d="M41 46 C41 40, 54 40, 54 46 Z" fill="#059669"/>
+
+    <!-- Bottom grass hill -->
+    <path d="M5.5 54 Q36 48 66.5 54 L66.5 63.5 L5.5 63.5 Z" fill="#22C55E"/>
+
+    <!-- Polaroid bottom chin with handwritten caption line -->
+    <rect x="5.5" y="63.5" width="61" height="17" fill="#FFFFFF"/>
+    <path d="M18 72 Q24 70 30 72 T42 71 T54 72" fill="none" stroke="#64748B" stroke-width="1.2" stroke-linecap="round" opacity="0.65"/>
+    <path d="M22 76 Q32 75 42 76" fill="none" stroke="#94A3B8" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  </g>
+
+  <!-- Golden Washi Tape Accent on Top Edge -->
+  <g transform="translate(50, 22) rotate(-3)">
+    <rect width="28" height="9" rx="1" fill="url(#tapeGrad)"/>
+    <line x1="2" y1="0" x2="2" y2="9" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+    <line x1="26" y1="0" x2="26" y2="9" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+  </g>
 </svg>
